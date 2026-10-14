@@ -640,10 +640,12 @@ def _fetch(
     cluster_text = _choice(options.get("cluster_text"), CLUSTER_TEXTS)
     cluster_sizing = _choice(options.get("cluster_sizing"), SIZINGS)
     text_scale = int(_choice(options.get("cluster_text_scale"), TEXT_SCALES)) / 100
-    cluster_n = _int(options.get("cluster_size"), 8, 2, SHEET_MAX)
     footer = _choice(options.get("footer"), FOOTERS)
     font = _choice(options.get("font"), tuple(FONTS))
-    want = _int(options.get("count"), 8, 1, LIST_MAX)
+    # one number for the cluster, the gallery and the paintings (a cell saved
+    # before 0.1.3 carries it as cluster_size)
+    want = _int(options.get("count") or options.get("cluster_size"), 8, 1, SHEET_MAX)
+    cluster_n = max(2, want)
     days_key = options.get("days") if options.get("days") in DAYS else "30d"
     quality = _choice(options.get("quality"), QUALITIES)
     radius_km = _choice(options.get("radius_km"), ("10", *RADII))
@@ -711,7 +713,7 @@ def _fetch(
         g["obs"] += s["count"]
     notices: list[str] = []
     cluster = None
-    shown = species[: SHEET_MAX if layout == "cluster" else min(want, LIST_MAX)]
+    shown = species[: cluster_n if layout == "cluster" else min(want, LIST_MAX)]
     latest = finds[0] if finds else (species[0] if species else None)
     if layout == "cluster" and species:
         label_size = max(S.SHEET_LABEL, 13 / ch) if ch else S.SHEET_LABEL
@@ -801,7 +803,7 @@ def _fetch(
         "text_scale": text_scale,
         "cluster_lines": list(cluster_lines),
         "species": shown,
-        "finds": finds[:want],
+        "finds": finds[: min(want, LIST_MAX)],
         "latest": latest,
         "species_total": int(raw.get("species_total") or len(species)),
         "obs_total": int(raw.get("obs_total") or 0) or sum(s["count"] for s in species),

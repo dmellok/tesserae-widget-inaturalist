@@ -1,7 +1,7 @@
 {
   "tesserae_compat": "1.x",
   "name": "Nature Nearby (iNaturalist)",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "kind": "widget",
   "description": "What people have found near a place lately on iNaturalist, or your own observations: birds, mammals, insects, plants, fungi and more, as granular as you like. A page of the species together (cut out and packed as a specimen sheet, from AI paintings in 46 styles or your own prompt), a gallery, the latest find, a field log, a full-bleed picture and a tally by kind. Photos are the observers' own, credited.",
   "icon": "ph-leaf",
@@ -736,61 +736,6 @@
       }
     },
     {
-      "name": "cluster_size",
-      "type": "select",
-      "label": "Cluster: how many",
-      "default": "8",
-      "choices": [
-        {
-          "value": "2",
-          "label": "2"
-        },
-        {
-          "value": "3",
-          "label": "3"
-        },
-        {
-          "value": "4",
-          "label": "4"
-        },
-        {
-          "value": "5",
-          "label": "5"
-        },
-        {
-          "value": "6",
-          "label": "6"
-        },
-        {
-          "value": "8",
-          "label": "8"
-        },
-        {
-          "value": "10",
-          "label": "10"
-        },
-        {
-          "value": "12",
-          "label": "12"
-        },
-        {
-          "value": "16",
-          "label": "16"
-        },
-        {
-          "value": "20",
-          "label": "20"
-        },
-        {
-          "value": "24",
-          "label": "24"
-        }
-      ],
-      "show_if": {
-        "layout": "cluster"
-      }
-    },
-    {
       "name": "cluster_arrange",
       "type": "select",
       "label": "Cluster: arrangement",
@@ -957,12 +902,24 @@
     {
       "name": "count",
       "type": "select",
-      "label": "How many",
+      "label": "How many species",
       "default": "8",
       "choices": [
         {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
           "value": "4",
           "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
         },
         {
           "value": "6",
@@ -979,16 +936,21 @@
         {
           "value": "12",
           "label": "12"
+        },
+        {
+          "value": "16",
+          "label": "16"
+        },
+        {
+          "value": "20",
+          "label": "20"
+        },
+        {
+          "value": "24",
+          "label": "24"
         }
       ],
-      "show_if": {
-        "layout": [
-          "gallery",
-          "latest",
-          "list",
-          "tally"
-        ]
-      }
+      "help": "The species on the cluster page and in the gallery (the gallery shows up to twelve), and how many are painted when pictures are AI paintings. The field log and the latest find take the newest observations instead."
     },
     {
       "name": "font",

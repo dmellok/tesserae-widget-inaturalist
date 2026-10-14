@@ -417,7 +417,7 @@ def test_custom_prompt_and_kind_in_every_style(tmp_path, offline):
 
 
 def test_cluster_is_a_montage_until_painted_then_a_sheet(tmp_path, offline):
-    r = _fetch(tmp_path, offline, layout="cluster", pictures="photo", cluster_size="4")
+    r = _fetch(tmp_path, offline, layout="cluster", pictures="photo", count="4")
     c = r["cluster"]
     assert (
         c["montage"]
@@ -431,7 +431,7 @@ def test_cluster_is_a_montage_until_painted_then_a_sheet(tmp_path, offline):
             layout="cluster",
             pictures="gen",
             fal_key="k",
-            cluster_size="4",
+            count="4",
             refresh_min="5",
         )
         _settle()
@@ -444,7 +444,7 @@ def test_cluster_is_a_montage_until_painted_then_a_sheet(tmp_path, offline):
             layout="cluster",
             pictures="gen",
             fal_key="k",
-            cluster_size="4",
+            count="4",
             cluster_labels=["name", "kind", "count"],
         )
         _settle()
