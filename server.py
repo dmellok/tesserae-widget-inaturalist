@@ -944,7 +944,7 @@ def _gallery(data_dir: Path) -> dict[str, Any]:
         key=lambda e: (e["active"] is None, e["name"].lower(), e["style"]),
     )
     return {
-        "items": ordered,
+        "paintings": ordered,
         "used": P._budget_used(folder),
         "cap": P._CAP.get(),
         "running": sorted(running),
@@ -1134,7 +1134,9 @@ def blueprint() -> Any:
     @bp.post("/<slug>/repaint")
     def repaint(slug: str) -> Any:
         slug = slug_or_404(slug)
-        e = next((e for e in _gallery(data_dir())["items"] if e["slug"] == slug), None)
+        e = next(
+            (e for e in _gallery(data_dir())["paintings"] if e["slug"] == slug), None
+        )
         job = _job_for(e) if e else None
         if job is None:
             abort(404)
@@ -1252,7 +1254,7 @@ def blueprint() -> Any:
             abort(400)
         keys = [
             e["slug"]
-            for e in _gallery(data_dir())["items"]
+            for e in _gallery(data_dir())["paintings"]
             if e["style"] == style and e["active"]
         ]
         retired(retire(keys))

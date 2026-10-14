@@ -525,14 +525,14 @@ def test_admin_gallery_lists_paintings(tmp_path, offline):
     _settle()
     g = server._gallery(tmp_path)
     assert (
-        g["items"][0]["name"] == "Bogong Moth"
-        and g["items"][0]["sci"] == "Agrotis infusa"
+        g["paintings"][0]["name"] == "Bogong Moth"
+        and g["paintings"][0]["sci"] == "Agrotis infusa"
     )
-    assert g["items"][0]["kind"] == "Insecta" and g["items"][0]["active"]
+    assert g["paintings"][0]["kind"] == "Insecta" and g["paintings"][0]["active"]
     assert ("Fungi", "Fungi") in g["kinds"]
     known = server._known_species(tmp_path)
     assert ("Fly Agaric", "Amanita muscaria", "Fungi") in known
-    job = server._job_for(g["items"][0])
+    job = server._job_for(g["paintings"][0])
     assert job == {
         "key": "agrotis_infusa--gould",
         "style": "gould",
@@ -586,3 +586,38 @@ def test_client_renders_every_layout(tmp_path, offline, layout):
     )
     assert out.returncode == 0, out.stderr
     assert "ok" in out.stdout
+
+
+def test_admin_template_renders(tmp_path, offline):
+    """The admin page renders against the gallery payload: a stub of the host's
+    base template and component macros stands in for Tesserae itself."""
+    import jinja2
+    from flask import Flask
+
+    _fetch(tmp_path, offline, layout="gallery", pictures="gen", fal_key="k")
+    _settle()
+    app = Flask("t", template_folder=str(ROOT / "templates"))
+    stubs = {
+        "_base.html": "{% block title %}{% endblock %}{% block main %}{% endblock %}",
+        "_components.html": (
+            "{% macro card_head(t, icon_name='', level=2, blurb='') %}<h2>{{ t }}</h2>{{ blurb }}{% endmacro %}"
+            "{% macro button(t, icon='', variant='', disabled=False) %}<button>{{ t }}</button>{% endmacro %}"
+            "{% macro empty_state(i, t, b) %}<p>{{ t }} {{ b }}</p>{% endmacro %}"
+        ),
+    }
+    app.jinja_loader = jinja2.ChoiceLoader(
+        [jinja2.DictLoader(stubs), jinja2.FileSystemLoader(str(ROOT / "templates"))]
+    )
+    app.register_blueprint(server.blueprint(), url_prefix="/plugins/inaturalist")
+    with app.test_request_context("/plugins/inaturalist/"):
+        from flask import render_template
+
+        html = render_template(
+            "inaturalist/admin.html",
+            g=server._gallery(tmp_path),
+            known=server._known_species(tmp_path),
+            has_key=True,
+        )
+    assert "Bogong Moth" in html and "Agrotis infusa" in html
+    assert 'name="sci"' in html and html.count("<optgroup") >= 8
+    assert "No paintings yet" not in html

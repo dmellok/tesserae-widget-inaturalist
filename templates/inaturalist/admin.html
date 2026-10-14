@@ -71,8 +71,8 @@
 
 <section class="card">
   {{ card_head('Paintings', icon_name='images', level=2) }}
-  {% if g.items %}
-  {% set present = g.items|selectattr('active')|map(attribute='style')|unique|list %}
+  {% if g.paintings %}
+  {% set present = g.paintings|selectattr('active')|map(attribute='style')|unique|list %}
   <div class="bb-tools">
     <div class="bb-filter" role="group" aria-label="Show paintings in a style">
       <button type="button" class="bb-chip on" data-style="">All</button>
@@ -96,7 +96,7 @@
     {% endif %}
   </div>
   <div class="bb-grid">
-    {% for b in g.items %}
+    {% for b in g.paintings %}
     <article class="bb-bird" data-style="{{ b.style }}">
       <header class="bb-bird-head">
         {% if b.active %}<input type="checkbox" class="bb-pick" name="keys" value="{{ b.slug }}" form="bb-bulk" aria-label="Select {{ b.name }}, {{ b.style_label }}">{% endif %}
