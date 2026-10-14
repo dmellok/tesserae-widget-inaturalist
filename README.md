@@ -43,7 +43,6 @@ The widget's page under **Widgets** lists every painting with its credit, paints
 
 **Look** picks the page; **Arrangement** where the specimens go (the look's own, an oval, a circle, a ring, rows, a scatter, a heap at the foot); **Sizes** how big each is drawn: by kind (a mammal large, an insect small, a plant in between), the most or the least observed biggest, or all alike. **Text** is the whole key, the labels under each specimen alone, or nothing, with **Label lines** choosing name, scientific name, kind, observations, when it was last seen and who saw it, at a **Text size** of your choice.
 
-![Wreath](screenshots/extra-6.png)
 
 ## Files
 
