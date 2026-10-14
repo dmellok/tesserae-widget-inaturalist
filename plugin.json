@@ -1,0 +1,1138 @@
+{
+  "tesserae_compat": "1.x",
+  "name": "Nature Nearby (iNaturalist)",
+  "version": "0.1.0",
+  "kind": "widget",
+  "description": "What people have found near a place lately on iNaturalist, or your own observations: birds, mammals, insects, plants, fungi and more, as granular as you like. A page of the species together (cut out and packed as a specimen sheet, from AI paintings in 46 styles or your own prompt), a gallery, the latest find, a field log, a full-bleed picture and a tally by kind. Photos are the observers' own, credited.",
+  "icon": "ph-leaf",
+  "supports": {
+    "sizes": [
+      "sm",
+      "md",
+      "lg"
+    ]
+  },
+  "requires": [
+    "network:api.inaturalist.org",
+    "network:inaturalist-open-data.s3.amazonaws.com",
+    "network:static.inaturalist.org",
+    "network:fal.run",
+    "network:v3.fal.media",
+    "network:v3b.fal.media",
+    "network:fal.media"
+  ],
+  "settings": [
+    {
+      "name": "fal_api_key",
+      "type": "string",
+      "label": "fal.ai API key (AI paintings, experimental)",
+      "secret": true,
+      "default": "",
+      "help": "Only needed for the AI painting picture option. Each species is painted once, from the observation's own openly licensed photo, in the background (it shows on a later refresh), and kept, at about US$0.04 a species up to the daily limit below. Manage the paintings on this widget's page under Widgets. Get a key at https://fal.ai/dashboard/keys; it is only sent to fal.run."
+    },
+    {
+      "name": "gen_daily_cap",
+      "type": "select",
+      "label": "AI paintings per day",
+      "default": "12",
+      "help": "The most new AI paintings made in a day, at about US$0.04 each. Paintings are kept, so a place's species only cost once; raise this to fill a specimen sheet faster.",
+      "choices": [
+        {
+          "value": "6",
+          "label": "6 (about US$0.24)"
+        },
+        {
+          "value": "12",
+          "label": "12 (about US$0.48)"
+        },
+        {
+          "value": "24",
+          "label": "24 (about US$0.96)"
+        },
+        {
+          "value": "48",
+          "label": "48 (about US$1.92)"
+        },
+        {
+          "value": "96",
+          "label": "96 (about US$3.84)"
+        }
+      ]
+    }
+  ],
+  "cell_options": [
+    {
+      "name": "location",
+      "type": "location_search",
+      "label": "Place",
+      "default": "",
+      "help": "Observations within the circle below of this place. Falls back to the app-level location. Leave it empty, with an iNaturalist username below, to show that person's observations from anywhere."
+    },
+    {
+      "name": "radius_km",
+      "type": "select",
+      "label": "Within",
+      "default": "10",
+      "choices": [
+        {
+          "value": "2",
+          "label": "2 km"
+        },
+        {
+          "value": "5",
+          "label": "5 km"
+        },
+        {
+          "value": "10",
+          "label": "10 km"
+        },
+        {
+          "value": "25",
+          "label": "25 km"
+        },
+        {
+          "value": "50",
+          "label": "50 km"
+        }
+      ],
+      "help": "How far round the place to look."
+    },
+    {
+      "name": "user_login",
+      "type": "string",
+      "label": "Only this iNaturalist user (optional)",
+      "default": "",
+      "help": "An iNaturalist username. Set it to your own to see what you have catalogued, near the place or, with no place, anywhere."
+    },
+    {
+      "name": "groups",
+      "type": "multiselect",
+      "label": "What to show",
+      "default": [
+        "3",
+        "40151",
+        "26036",
+        "20978",
+        "47158",
+        "47119",
+        "47126",
+        "47170"
+      ],
+      "choices": [
+        {
+          "value": "3",
+          "label": "Birds",
+          "group": "Animals"
+        },
+        {
+          "value": "40151",
+          "label": "Mammals",
+          "group": "Animals"
+        },
+        {
+          "value": "848319",
+          "label": "Marsupials",
+          "group": "Animals"
+        },
+        {
+          "value": "40268",
+          "label": "Bats",
+          "group": "Animals"
+        },
+        {
+          "value": "26036",
+          "label": "Reptiles",
+          "group": "Animals"
+        },
+        {
+          "value": "26172",
+          "label": "Lizards and snakes",
+          "group": "Animals"
+        },
+        {
+          "value": "39532",
+          "label": "Turtles and tortoises",
+          "group": "Animals"
+        },
+        {
+          "value": "20978",
+          "label": "Amphibians",
+          "group": "Animals"
+        },
+        {
+          "value": "20979",
+          "label": "Frogs and toads",
+          "group": "Animals"
+        },
+        {
+          "value": "47178",
+          "label": "Fishes",
+          "group": "Animals"
+        },
+        {
+          "value": "47273",
+          "label": "Sharks and rays",
+          "group": "Animals"
+        },
+        {
+          "value": "47115",
+          "label": "Molluscs",
+          "group": "Animals"
+        },
+        {
+          "value": "47114",
+          "label": "Snails and slugs",
+          "group": "Animals"
+        },
+        {
+          "value": "47186",
+          "label": "Crabs and shrimps",
+          "group": "Animals"
+        },
+        {
+          "value": "47534",
+          "label": "Jellyfish and corals",
+          "group": "Animals"
+        },
+        {
+          "value": "47549",
+          "label": "Sea stars and urchins",
+          "group": "Animals"
+        },
+        {
+          "value": "1",
+          "label": "Every animal",
+          "group": "Animals"
+        },
+        {
+          "value": "47158",
+          "label": "Insects",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47157",
+          "label": "Butterflies and moths",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47224",
+          "label": "Butterflies",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47792",
+          "label": "Dragonflies and damselflies",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47208",
+          "label": "Beetles",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47201",
+          "label": "Bees, wasps and ants",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47221",
+          "label": "Bees",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47336",
+          "label": "Ants",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47822",
+          "label": "Flies",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47744",
+          "label": "True bugs and hoppers",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47651",
+          "label": "Grasshoppers and crickets",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "48112",
+          "label": "Mantises",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47119",
+          "label": "Spiders and scorpions",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47118",
+          "label": "Spiders",
+          "group": "Insects and spiders"
+        },
+        {
+          "value": "47126",
+          "label": "Plants",
+          "group": "Plants"
+        },
+        {
+          "value": "47125",
+          "label": "Flowering plants",
+          "group": "Plants"
+        },
+        {
+          "value": "47217",
+          "label": "Orchids",
+          "group": "Plants"
+        },
+        {
+          "value": "47604",
+          "label": "Daisies and asters",
+          "group": "Plants"
+        },
+        {
+          "value": "47148",
+          "label": "Rose family",
+          "group": "Plants"
+        },
+        {
+          "value": "136329",
+          "label": "Conifers",
+          "group": "Plants"
+        },
+        {
+          "value": "121943",
+          "label": "Ferns",
+          "group": "Plants"
+        },
+        {
+          "value": "311249",
+          "label": "Mosses",
+          "group": "Plants"
+        },
+        {
+          "value": "47170",
+          "label": "Fungi",
+          "group": "Fungi and more"
+        },
+        {
+          "value": "50814",
+          "label": "Mushrooms and brackets",
+          "group": "Fungi and more"
+        },
+        {
+          "value": "54743",
+          "label": "Lichens",
+          "group": "Fungi and more"
+        },
+        {
+          "value": "48222",
+          "label": "Seaweeds and kelp",
+          "group": "Fungi and more"
+        },
+        {
+          "value": "47686",
+          "label": "Protozoa and slime moulds",
+          "group": "Fungi and more"
+        }
+      ],
+      "help": "Tick as many kinds as you like, as broad or as fine as you like: all insects, or just butterflies and dragonflies. Nothing ticked shows everything."
+    },
+    {
+      "name": "days",
+      "type": "select",
+      "label": "Looking back",
+      "default": "30d",
+      "choices": [
+        {
+          "value": "7d",
+          "label": "A week"
+        },
+        {
+          "value": "14d",
+          "label": "Two weeks"
+        },
+        {
+          "value": "30d",
+          "label": "A month"
+        },
+        {
+          "value": "90d",
+          "label": "Three months"
+        },
+        {
+          "value": "365d",
+          "label": "A year"
+        }
+      ]
+    },
+    {
+      "name": "quality",
+      "type": "select",
+      "label": "Observations",
+      "default": "research",
+      "choices": [
+        {
+          "value": "research",
+          "label": "Research grade: the community agrees on the species"
+        },
+        {
+          "value": "",
+          "label": "Any with a species, agreed or not"
+        }
+      ],
+      "help": "Research grade means the community has agreed on the species."
+    },
+    {
+      "name": "layout",
+      "type": "select",
+      "label": "Layout",
+      "default": "cluster",
+      "choices": [
+        {
+          "value": "cluster",
+          "label": "Cluster: the species together on one page"
+        },
+        {
+          "value": "gallery",
+          "label": "Gallery: a card for each species"
+        },
+        {
+          "value": "latest",
+          "label": "Latest find: the newest observation, and the rest"
+        },
+        {
+          "value": "list",
+          "label": "Field log: the newest observations as a list"
+        },
+        {
+          "value": "bleed",
+          "label": "Full bleed: the newest find fills the cell"
+        },
+        {
+          "value": "tally",
+          "label": "Tally: how many of each kind"
+        }
+      ]
+    },
+    {
+      "name": "pictures",
+      "type": "select",
+      "label": "Pictures",
+      "default": "photo",
+      "choices": [
+        {
+          "value": "photo",
+          "label": "The observers' photos"
+        },
+        {
+          "value": "gen",
+          "label": "AI paintings (photos until each is painted)"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "help": "AI paintings need a fal.ai key in this widget's settings; each species is painted once from the observation's own photo and kept. Manage them on this widget's page under Widgets.",
+      "show_if": {
+        "layout": {
+          "not": "tally"
+        }
+      }
+    },
+    {
+      "name": "art_style",
+      "type": "select",
+      "label": "Art style (AI paintings)",
+      "default": "gould",
+      "choices": [
+        {
+          "value": "gould",
+          "label": "Hand-coloured lithograph (Gould)",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "audubon",
+          "label": "Watercolour after Audubon",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "woodblock",
+          "label": "Japanese woodblock print",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "engraving",
+          "label": "Black-ink engraving",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "linocut",
+          "label": "Linocut",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "sketch",
+          "label": "Field sketch",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "risograph",
+          "label": "Risograph print",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "screenprint",
+          "label": "Screen print poster",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "harper",
+          "label": "Mid-century modern (Harper)",
+          "group": "Plates and prints"
+        },
+        {
+          "value": "artnouveau",
+          "label": "Art Nouveau illustration",
+          "group": "Decorative"
+        },
+        {
+          "value": "mucha",
+          "label": "Mucha poster",
+          "group": "Decorative"
+        },
+        {
+          "value": "jugendstil",
+          "label": "Jugendstil",
+          "group": "Decorative"
+        },
+        {
+          "value": "glasgow",
+          "label": "Glasgow style",
+          "group": "Decorative"
+        },
+        {
+          "value": "secession",
+          "label": "Vienna Secession",
+          "group": "Decorative"
+        },
+        {
+          "value": "deco",
+          "label": "Art Deco",
+          "group": "Decorative"
+        },
+        {
+          "value": "artsandcrafts",
+          "label": "Arts and Crafts (Morris)",
+          "group": "Decorative"
+        },
+        {
+          "value": "japonisme",
+          "label": "Japonisme",
+          "group": "Decorative"
+        },
+        {
+          "value": "fairytale",
+          "label": "Golden Age fairy-tale plate",
+          "group": "Decorative"
+        },
+        {
+          "value": "beardsley",
+          "label": "Beardsley ink",
+          "group": "Decorative"
+        },
+        {
+          "value": "nouveauglass",
+          "label": "Nouveau stained window",
+          "group": "Decorative"
+        },
+        {
+          "value": "chinoiserie",
+          "label": "Chinoiserie",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "persian",
+          "label": "Persian miniature",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "bestiary",
+          "label": "Medieval bestiary",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "byzantine",
+          "label": "Byzantine icon",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "folkart",
+          "label": "Folk art",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "delft",
+          "label": "Delft tile",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "cigarette",
+          "label": "Edwardian cigarette card",
+          "group": "Period and ornament"
+        },
+        {
+          "value": "watercolour",
+          "label": "Modern watercolour",
+          "group": "Fine art"
+        },
+        {
+          "value": "sumie",
+          "label": "Ink and wash",
+          "group": "Fine art"
+        },
+        {
+          "value": "pointillism",
+          "label": "Pointillism",
+          "group": "Fine art"
+        },
+        {
+          "value": "charcoal",
+          "label": "Charcoal",
+          "group": "Fine art"
+        },
+        {
+          "value": "origami",
+          "label": "Origami",
+          "group": "Crafts"
+        },
+        {
+          "value": "papercut",
+          "label": "Paper cut",
+          "group": "Crafts"
+        },
+        {
+          "value": "embroidery",
+          "label": "Embroidery",
+          "group": "Crafts"
+        },
+        {
+          "value": "felt",
+          "label": "Needle felt",
+          "group": "Crafts"
+        },
+        {
+          "value": "clay",
+          "label": "Clay figure",
+          "group": "Crafts"
+        },
+        {
+          "value": "bricks",
+          "label": "Brick-built",
+          "group": "Crafts"
+        },
+        {
+          "value": "stainedglass",
+          "label": "Stained glass",
+          "group": "Crafts"
+        },
+        {
+          "value": "mosaic",
+          "label": "Mosaic",
+          "group": "Crafts"
+        },
+        {
+          "value": "anime",
+          "label": "Anime",
+          "group": "Playful"
+        },
+        {
+          "value": "kawaii",
+          "label": "Kawaii sticker",
+          "group": "Playful"
+        },
+        {
+          "value": "pixel",
+          "label": "Pixel art",
+          "group": "Playful"
+        },
+        {
+          "value": "hats",
+          "label": "Tiny hats",
+          "group": "Jokes"
+        },
+        {
+          "value": "superhero",
+          "label": "Superhero",
+          "group": "Jokes"
+        },
+        {
+          "value": "portrait",
+          "label": "Victorian portrait",
+          "group": "Jokes"
+        },
+        {
+          "value": "pirate",
+          "label": "Pirate",
+          "group": "Jokes"
+        },
+        {
+          "value": "custom",
+          "label": "Your own prompt",
+          "group": "Your own"
+        }
+      ],
+      "show_if": {
+        "pictures": "gen"
+      },
+      "help": "How AI paintings are painted, in groups. Each style keeps its own painting per species, so switching back costs nothing."
+    },
+    {
+      "name": "art_prompt",
+      "type": "textarea",
+      "label": "Your own prompt",
+      "default": "",
+      "placeholder": "an Art Nouveau illustration with sinuous flowing lines, a muted palette of sage, ochre and dusty rose, and a border of curling leaves and lilies, on plain cream paper",
+      "help": "Describe the medium and the look, as the example does; the widget adds the species, its reference photo and the plain background. Each wording keeps its own paintings. Blank uses the example.",
+      "show_if": {
+        "pictures": "gen",
+        "art_style": "custom"
+      }
+    },
+    {
+      "name": "cluster_style",
+      "type": "select",
+      "label": "Cluster: look",
+      "default": "sheet",
+      "choices": [
+        {
+          "value": "sheet",
+          "label": "Specimen sheet: cut out and printed together"
+        },
+        {
+          "value": "numbered",
+          "label": "Numbered plate with a key"
+        },
+        {
+          "value": "wreath",
+          "label": "Wreath round a title"
+        },
+        {
+          "value": "notebook",
+          "label": "Field notebook: taped into a ruled book"
+        },
+        {
+          "value": "drawer",
+          "label": "Specimen drawer: each in a compartment"
+        }
+      ],
+      "show_if": {
+        "layout": "cluster"
+      }
+    },
+    {
+      "name": "cluster_size",
+      "type": "select",
+      "label": "Cluster: how many",
+      "default": "8",
+      "choices": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        },
+        {
+          "value": "8",
+          "label": "8"
+        },
+        {
+          "value": "10",
+          "label": "10"
+        },
+        {
+          "value": "12",
+          "label": "12"
+        },
+        {
+          "value": "16",
+          "label": "16"
+        },
+        {
+          "value": "20",
+          "label": "20"
+        },
+        {
+          "value": "24",
+          "label": "24"
+        }
+      ],
+      "show_if": {
+        "layout": "cluster"
+      }
+    },
+    {
+      "name": "cluster_arrange",
+      "type": "select",
+      "label": "Cluster: arrangement",
+      "default": "auto",
+      "choices": [
+        {
+          "value": "auto",
+          "label": "The look's own"
+        },
+        {
+          "value": "oval",
+          "label": "Oval cluster"
+        },
+        {
+          "value": "circle",
+          "label": "Round cluster"
+        },
+        {
+          "value": "ring",
+          "label": "Ring round the middle"
+        },
+        {
+          "value": "rows",
+          "label": "Rows"
+        },
+        {
+          "value": "scatter",
+          "label": "Scattered"
+        },
+        {
+          "value": "heap",
+          "label": "Heaped at the foot"
+        }
+      ],
+      "show_if": {
+        "layout": "cluster"
+      }
+    },
+    {
+      "name": "cluster_sizing",
+      "type": "select",
+      "label": "Cluster: sizes",
+      "default": "kind",
+      "choices": [
+        {
+          "value": "kind",
+          "label": "By kind: a mammal large, an insect small"
+        },
+        {
+          "value": "busy",
+          "label": "The most observed biggest"
+        },
+        {
+          "value": "rare",
+          "label": "The least observed biggest"
+        },
+        {
+          "value": "same",
+          "label": "All alike"
+        }
+      ],
+      "show_if": {
+        "layout": "cluster"
+      }
+    },
+    {
+      "name": "cluster_text",
+      "type": "select",
+      "label": "Cluster: text",
+      "default": "key",
+      "choices": [
+        {
+          "value": "key",
+          "label": "Title, key and labels"
+        },
+        {
+          "value": "under",
+          "label": "Labels under each one only"
+        },
+        {
+          "value": "none",
+          "label": "None: the picture alone"
+        }
+      ],
+      "show_if": {
+        "layout": "cluster"
+      }
+    },
+    {
+      "name": "cluster_text_scale",
+      "type": "select",
+      "label": "Cluster: text size",
+      "default": "100",
+      "choices": [
+        {
+          "value": "60",
+          "label": "60%"
+        },
+        {
+          "value": "80",
+          "label": "80%"
+        },
+        {
+          "value": "100",
+          "label": "100%"
+        },
+        {
+          "value": "125",
+          "label": "125%"
+        },
+        {
+          "value": "150",
+          "label": "150%"
+        }
+      ],
+      "show_if": {
+        "layout": "cluster",
+        "cluster_text": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "name": "cluster_labels",
+      "type": "multiselect",
+      "label": "Cluster: label lines",
+      "default": [
+        "name"
+      ],
+      "choices": [
+        {
+          "value": "name",
+          "label": "Name"
+        },
+        {
+          "value": "sci",
+          "label": "Scientific name"
+        },
+        {
+          "value": "kind",
+          "label": "Kind (bird, fungus, orchid)"
+        },
+        {
+          "value": "count",
+          "label": "Observations"
+        },
+        {
+          "value": "when",
+          "label": "Last seen"
+        },
+        {
+          "value": "who",
+          "label": "Observer"
+        }
+      ],
+      "help": "Printed over the page, not into the picture, in this order.",
+      "show_if": {
+        "layout": "cluster",
+        "cluster_text": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "name": "count",
+      "type": "select",
+      "label": "How many",
+      "default": "8",
+      "choices": [
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        },
+        {
+          "value": "8",
+          "label": "8"
+        },
+        {
+          "value": "10",
+          "label": "10"
+        },
+        {
+          "value": "12",
+          "label": "12"
+        }
+      ],
+      "show_if": {
+        "layout": [
+          "gallery",
+          "latest",
+          "list",
+          "tally"
+        ]
+      }
+    },
+    {
+      "name": "font",
+      "type": "select",
+      "label": "Type",
+      "default": "classic",
+      "choices": [
+        {
+          "value": "classic",
+          "label": "Classic (engraved)"
+        },
+        {
+          "value": "playfair",
+          "label": "Playfair"
+        },
+        {
+          "value": "typewriter",
+          "label": "Typewriter"
+        },
+        {
+          "value": "hand",
+          "label": "Handwritten"
+        },
+        {
+          "value": "modern",
+          "label": "Modern"
+        },
+        {
+          "value": "theme",
+          "label": "The dashboard's own"
+        }
+      ]
+    },
+    {
+      "name": "panel",
+      "type": "select",
+      "label": "Panel",
+      "default": "colour",
+      "choices": [
+        {
+          "value": "colour",
+          "label": "Colour"
+        },
+        {
+          "value": "gray16",
+          "label": "16 greys"
+        },
+        {
+          "value": "gray4",
+          "label": "4 greys"
+        },
+        {
+          "value": "mono",
+          "label": "Black and white"
+        }
+      ],
+      "help": "A page is composed once and quantised per panel afterwards, so the widget cannot tell what the panel can show. Greyscale and black-and-white convert the pictures here, with the contrast stretched so they still read once dithered."
+    },
+    {
+      "name": "show_sci",
+      "type": "boolean",
+      "label": "Scientific names",
+      "default": true
+    },
+    {
+      "name": "footer",
+      "type": "select",
+      "label": "Foot of the page",
+      "default": "show",
+      "choices": [
+        {
+          "value": "show",
+          "label": "Status and credits"
+        },
+        {
+          "value": "credits",
+          "label": "Credits only"
+        },
+        {
+          "value": "hide",
+          "label": "Nothing"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "label": "Title",
+      "default": "",
+      "help": "Blank uses the place, or the username."
+    },
+    {
+      "name": "refresh_min",
+      "type": "select",
+      "label": "Ask iNaturalist every",
+      "default": "30",
+      "choices": [
+        {
+          "value": "15",
+          "label": "15 minutes"
+        },
+        {
+          "value": "30",
+          "label": "30 minutes"
+        },
+        {
+          "value": "60",
+          "label": "hour"
+        },
+        {
+          "value": "180",
+          "label": "3 hours"
+        }
+      ],
+      "help": "iNaturalist asks for no more than one request a second and 10,000 a day; half an hour is plenty for a page of what was found this month."
+    }
+  ],
+  "data_schema": {
+    "fields": [
+      {
+        "name": "label",
+        "type": "str",
+        "label": "Title"
+      },
+      {
+        "name": "species_total",
+        "type": "num",
+        "label": "Species found"
+      },
+      {
+        "name": "obs_total",
+        "type": "num",
+        "label": "Observations"
+      },
+      {
+        "name": "species",
+        "type": "arr",
+        "label": "Species"
+      },
+      {
+        "name": "finds",
+        "type": "arr",
+        "label": "Newest finds"
+      }
+    ]
+  }
+}
