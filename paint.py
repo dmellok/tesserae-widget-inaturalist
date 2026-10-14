@@ -124,7 +124,7 @@ KINDS: dict[str, tuple[str, str, str, float]] = {
     "Fungi": (
         "Fungi",
         "fungus",
-        "the fruiting body alone, cap and stem, cut cleanly at the base as a specimen in a mycological plate, with no ground, soil, leaf litter, wood, bark or log around it",
+        "the whole fruiting body alone in exactly the form the photo shows, whether a cap on a stem, a stemless bracket or shelf, a cup, a club, a coral, a puffball or a crust, cut cleanly from whatever it grew on, as a specimen in a mycological plate, with no ground, soil, leaf litter, wood, bark or log around it",
         0.85,
     ),
     "Chromista": (
@@ -749,8 +749,42 @@ GEN_NATURE = (
     "alone on plain, empty paper with a clear margin all round, as a specimen cut from its "
     "surroundings. Leave out everything around it in the photo: no ground, soil, leaf "
     "litter, grass, rocks, wood, bark, logs, water or sky, no other creatures or plants, "
-    "no scenery, no text, no lettering, no border, no signature."
+    "no scenery, no text, no lettering, no border, no signature.{about}"
 )
+WIKI_SUMMARY = "https://en.wikipedia.org/api/rest_v1/page/summary/"
+ABOUT_MAX = 400
+
+
+def _about(sci: str, data_dir: Path) -> str:
+    """A sentence or two on what the species looks like, from the English
+    Wikipedia summary of it, kept a month; '' when there is none. Fed to the
+    model so a bracket fungus is not given a stem it never had."""
+    if not sci:
+        return ""
+    folder = data_dir / "img"
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"about_{_slug(sci)}.json"
+    with contextlib.suppress(OSError, json.JSONDecodeError):
+        if time.time() - path.stat().st_mtime < 30 * 86400:
+            return str(json.loads(path.read_text(encoding="utf-8")).get("about", ""))
+    answer, err = _json(
+        WIKI_SUMMARY
+        + urllib.parse.quote(sci.strip().replace(" ", "_"))
+        + "?redirect=true"
+    )
+    about = ""
+    if not err and isinstance(answer, dict):
+        text = " ".join(str(answer.get("extract") or "").split())
+        # the first sentences, to the cap, ending on a sentence
+        if len(text) > ABOUT_MAX:
+            cut = text[:ABOUT_MAX]
+            text = cut[: cut.rfind(". ") + 1] if ". " in cut else cut
+        about = text
+    if not err:
+        _write(path, json.dumps({"about": about}).encode())
+    return about
+
+
 _PAINTING: set[str] = set()
 # For the paintings page's live ticker: when each painting started, its bird
 # and style, and the last few to finish.
@@ -831,12 +865,14 @@ def _paint(job: dict[str, Any], data_dir: Path, fal_key: str) -> str | None:
     if not image_url:
         return fail("no openly licensed reference photo on iNaturalist")
     noun, pose = noun_of(job.get("kind"))
+    about = str(job.get("about") or _about(job.get("sci") or "", data_dir))
     prompt = GEN_NATURE.format(
         kind=noun,
         name=job["name"],
         sci=job["sci"],
         style=how.replace("{kind}", noun),
         pose=pose,
+        about=f" About the subject: {about}" if about else "",
     )
     _spend_budget(folder)
     body = json.dumps(

@@ -183,6 +183,14 @@ def offline():
             return json.dumps(
                 {"results": [{"taxon_photos": [{"photo": photo}]}]}
             ).encode(), None
+        if "wikipedia.org/api/rest_v1/page/summary/Agrotis_infusa" in url:
+            return json.dumps(
+                {
+                    "extract": "The bogong moth is a temperate species of night-flying moth, notable for its biannual long-distance seasonal migrations. It is brown with a dark mark on each forewing."
+                }
+            ).encode(), None
+        if "wikipedia.org/api/rest_v1/page/summary" in url:
+            return None, "HTTP 404"
         if "birefnet" in url:
             return json.dumps(
                 {"image": {"url": "https://fal.example/cut.png"}}
@@ -350,6 +358,12 @@ def test_painting_once_per_species_from_its_own_photo(tmp_path, offline):
     )
     assert "seen from above with its wings open" in prompt["prompt"]
     assert "no ground, soil, leaf litter" in prompt["prompt"]
+    assert prompt["prompt"].endswith(
+        "About the subject: The bogong moth is a temperate species of night-flying moth, notable for its biannual long-distance seasonal migrations. It is brown with a dark mark on each forewing."
+    )
+    assert (tmp_path / "img" / "about_agrotis_infusa.json").exists(), (
+        "the description is kept"
+    )
     # the reference is the species' licensed photo (the observation's own was all rights reserved)
     assert prompt["image_urls"] == [
         "https://inaturalist-open-data.s3.amazonaws.com/photos/10/medium.jpg"
