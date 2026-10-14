@@ -346,9 +346,10 @@ def test_painting_once_per_species_from_its_own_photo(tmp_path, offline):
     assert any(n.startswith("Painting the Bogong Moth") for n in r["status"])
     prompt = json.loads(offline.bodies[0])
     assert prompt["prompt"].startswith(
-        "Paint the insect in the reference photo, the Bogong Moth (Agrotis infusa), as a plate from"
+        "Paint only the insect in the reference photo, the Bogong Moth (Agrotis infusa), as a plate from"
     )
     assert "seen from above with its wings open" in prompt["prompt"]
+    assert "no ground, soil, leaf litter" in prompt["prompt"]
     # the reference is the species' licensed photo (the observation's own was all rights reserved)
     assert prompt["image_urls"] == [
         "https://inaturalist-open-data.s3.amazonaws.com/photos/10/medium.jpg"
@@ -369,7 +370,10 @@ def test_painting_once_per_species_from_its_own_photo(tmp_path, offline):
     )
     assert len(offline.bodies) == 2
     swan = json.loads(offline.bodies[1])
-    assert "Paint the bird in the reference photo, the Black Swan" in swan["prompt"]
+    assert (
+        "Paint only the bird in the reference photo, the Black Swan" in swan["prompt"]
+    )
+    assert "perched on a simple branch" in swan["prompt"]
     assert swan["image_urls"] == [
         "https://inaturalist-open-data.s3.amazonaws.com/photos/500/medium.jpg"
     ], "the observation's own licensed photo"

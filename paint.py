@@ -76,73 +76,73 @@ KINDS: dict[str, tuple[str, str, str, float]] = {
     "Mammalia": (
         "Mammals",
         "mammal",
-        "standing in profile on a small patch of bare ground, the whole animal",
+        "standing in profile, the whole animal from nose to tail, nothing under its feet",
         1.5,
     ),
     "Reptilia": (
         "Reptiles",
         "reptile",
-        "resting on a flat stone, the whole animal seen from the side",
+        "the whole animal seen from the side, nothing under it",
         1.0,
     ),
     "Amphibia": (
         "Amphibians",
         "amphibian",
-        "sitting on a flat stone, the whole animal seen from the side a little above",
+        "the whole animal seen from the side a little above, nothing under it",
         0.75,
     ),
     "Actinopterygii": (
         "Fishes",
         "fish",
-        "seen from the side as in a fish plate, the whole fish",
+        "seen from the side as in a fish plate, the whole fish, no water",
         1.0,
     ),
     "Insecta": (
         "Insects",
         "insect",
-        "seen from above with its wings open and every leg shown, as in an entomological plate, the whole insect",
+        "the whole insect alone, seen from above with its wings open and every leg shown, as a pinned specimen in an entomological plate, on nothing",
         0.6,
     ),
     "Arachnida": (
         "Spiders",
         "spider",
-        "seen from above with every leg shown, the whole animal",
+        "the whole animal alone, seen from above with every leg shown, on nothing",
         0.55,
     ),
     "Mollusca": (
         "Molluscs",
         "mollusc",
-        "the whole animal with its shell, seen from the side",
+        "the whole animal with its shell, seen from the side, on nothing",
         0.6,
     ),
     "Plantae": (
         "Plants",
         "plant",
-        "a single stem with its leaves and flower or fruit, as in a botanical plate, the whole specimen",
+        "a single cut stem with its leaves and flower or fruit, as a pressed specimen in a botanical plate, no soil, no pot, no ground",
         1.25,
     ),
     "Fungi": (
         "Fungi",
         "fungus",
-        "the whole fruiting body with a little of the ground or wood it grows from, as in a mycological plate",
+        "the fruiting body alone, cap and stem, cut cleanly at the base as a specimen in a mycological plate, with no ground, soil, leaf litter, wood, bark or log around it",
         0.85,
     ),
     "Chromista": (
         "Seaweeds",
         "seaweed",
-        "a single frond laid flat, as in a seaweed plate, the whole specimen",
+        "a single frond laid flat as a pressed specimen in a seaweed plate, no rock, no sand, no water",
         0.9,
     ),
     "Protozoa": (
         "Slime moulds",
         "slime mould",
-        "the whole organism, as in a naturalist's plate",
+        "the organism alone, as in a naturalist's plate, with no log, bark or leaf under it",
         0.55,
     ),
     "Animalia": (
         "Other animals",
         "animal",
-        "the whole animal, seen from the side as in a naturalist's plate",
+        "the whole animal alone, seen from the side as in a naturalist's plate, on nothing",
         0.8,
     ),
 }
@@ -744,10 +744,12 @@ GEN_STYLE_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("Jokes", ("hats", "superhero", "portrait", "pirate")),
 )
 GEN_NATURE = (
-    "Paint the {kind} in the reference photo, the {name} ({sci}), as {style}. Keep its "
-    "colours, markings, shape and proportions exactly as in the photo, {pose}, alone on "
-    "plain, empty paper with a clear margin all round. No other creatures or plants, no "
-    "scenery, no text, no lettering, no border, no signature."
+    "Paint only the {kind} in the reference photo, the {name} ({sci}), as {style}. Keep its "
+    "colours, markings, shape and proportions exactly as in the photo: {pose}. The subject "
+    "alone on plain, empty paper with a clear margin all round, as a specimen cut from its "
+    "surroundings. Leave out everything around it in the photo: no ground, soil, leaf "
+    "litter, grass, rocks, wood, bark, logs, water or sky, no other creatures or plants, "
+    "no scenery, no text, no lettering, no border, no signature."
 )
 _PAINTING: set[str] = set()
 # For the paintings page's live ticker: when each painting started, its bird
