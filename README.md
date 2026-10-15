@@ -1,5 +1,7 @@
 # Nature Nearby (iNaturalist)
 
+> **The collage page has moved.** The cluster / specimen-sheet page of this widget is superseded by [Specimen Sheet](https://github.com/dmellok/tesserae-widget-specimen-sheet), one widget for the page over BirdNET-Go, iNaturalist and GBIF, with model-made cut-outs, a balanced layout, eleven styles and a painted scene. Nature Nearby keeps its other layouts and stays installable.
+
 A [Tesserae](https://github.com/dmellok/tesserae) widget showing what people have found near a place lately on [iNaturalist](https://www.inaturalist.org), or one person's own observations: birds, mammals, reptiles, insects, spiders, plants, fungi and more, as broad or as fine as you like.
 
 ![Cluster: the month's species together](screenshots/lg.png)
