@@ -416,15 +416,15 @@ def _attach_pictures(
         return notices
     if mode == "gen" and not fal_key:
         notices.append(P.NOTE_NO_KEY)
-    started = not allow_new
+    started = 0 if allow_new else P.PER_FETCH
     for row in rows:
         row["pic"] = None
         if mode != "gen":
             continue
         pic, did, note = _generated_for(
-            row, size, data_dir, fal_key, not started, levels, style
+            row, size, data_dir, fal_key, started < P.PER_FETCH, levels, style
         )
-        started = started or did
+        started += 1 if did else 0
         if note and note not in notices:
             notices.append(note)
         row["pic"] = pic
@@ -467,13 +467,13 @@ def _specimen_sheet(
     sizing: str = "kind",
 ) -> tuple[dict[str, Any] | None, list[str]]:
     """The cluster as a printed page: the most observed species cut out of
-    their AI paintings and laid out together (one new painting per
+    their AI paintings and laid out together (a few new paintings per
     refresh). None until a species has a painting."""
     items = [dict(s) for s in sorted(species, key=lambda s: -s["count"])[:n]]
     notices: list[str] = []
     if not fal_key:
         notices.append(P.NOTE_NO_KEY)
-    started = False
+    started = 0
     for b in items:
         b["key"] = None
         pic, did, note = P._generated(
@@ -481,11 +481,11 @@ def _specimen_sheet(
             SIZE["gallery"],
             data_dir,
             fal_key,
-            allow_new=not started,
+            allow_new=started < P.PER_FETCH,
             levels=levels,
             style=style,
         )
-        started = started or did
+        started += 1 if did else 0
         if note and note not in notices:
             notices.append(note)
         if pic is not None:

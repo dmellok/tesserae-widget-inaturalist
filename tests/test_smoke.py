@@ -352,7 +352,11 @@ def test_painting_once_per_species_from_its_own_photo(tmp_path, offline):
     _settle()
     assert "AI paintings need" not in " ".join(r["notices"])
     assert any(n.startswith("Painting the Bogong Moth") for n in r["status"])
-    prompt = json.loads(offline.bodies[0])
+    prompt = next(
+        json.loads(b)
+        for b in offline.bodies
+        if "Agrotis infusa" in json.loads(b)["prompt"]
+    )
     assert prompt["prompt"].startswith(
         "Paint only the insect in the reference photo, the Bogong Moth (Agrotis infusa), as a plate from"
     )
@@ -379,11 +383,15 @@ def test_painting_once_per_species_from_its_own_photo(tmp_path, offline):
     r = _fetch(tmp_path, offline, layout="gallery", pictures="gen", fal_key="k")
     _settle()
     assert r["species"][0]["pic"]["kind"] == "generated"
-    assert any(n.startswith("Painting the Black Swan") for n in r["status"]), (
-        "one new painting per fetch"
+    # the first fetch started three side by side (the moth, the swan, the fungus); the second
+    # fetch finds those painted and starts the next
+    assert len(offline.bodies) >= 3
+    assert r["species"][1]["pic"]["kind"] == "generated"
+    swan = next(
+        json.loads(b)
+        for b in offline.bodies
+        if "Cygnus atratus" in json.loads(b)["prompt"]
     )
-    assert len(offline.bodies) == 2
-    swan = json.loads(offline.bodies[1])
     assert (
         "Paint only the bird in the reference photo, the Black Swan" in swan["prompt"]
     )
@@ -542,15 +550,13 @@ def test_admin_gallery_lists_paintings(tmp_path, offline):
     _fetch(tmp_path, offline, layout="gallery", pictures="gen", fal_key="k")
     _settle()
     g = server._gallery(tmp_path)
-    assert (
-        g["paintings"][0]["name"] == "Bogong Moth"
-        and g["paintings"][0]["sci"] == "Agrotis infusa"
-    )
-    assert g["paintings"][0]["kind"] == "Insecta" and g["paintings"][0]["active"]
+    moth = next(e for e in g["paintings"] if e["sci"] == "Agrotis infusa")
+    assert moth["name"] == "Bogong Moth"
+    assert moth["kind"] == "Insecta" and moth["active"]
     assert ("Fungi", "Fungi") in g["kinds"]
     known = server._known_species(tmp_path)
     assert ("Fly Agaric", "Amanita muscaria", "Fungi") in known
-    job = server._job_for(g["paintings"][0])
+    job = server._job_for(moth)
     assert job == {
         "key": "agrotis_infusa--gould",
         "style": "gould",

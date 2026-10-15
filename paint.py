@@ -37,6 +37,11 @@ GEN_CAPS = (6, 12, 24, 48, 96)
 GEN_TIMEOUT_S = 120
 # A species whose painting failed is left alone this long before another try.
 GEN_RETRY_S = 6 * 3600
+# New paintings a single fetch may start, side by side, and how many a batch
+# from the admin page keeps in flight: fal.ai takes several at once, and the
+# daily limit bounds the spend either way.
+PER_FETCH = 3
+BATCH_PARALLEL = 3
 NOTE_NO_KEY = "AI paintings need a fal.ai key in this widget's settings."
 NOTE_PAINTING = "Painting {name} with fal.ai; it appears on a later refresh."
 NOTE_GEN_FAILED = "AI painting of {name} failed: {why}"
@@ -1013,8 +1018,8 @@ _BATCH: set[str] = set()
 
 
 def _start_batch(jobs: list[dict[str, Any]], data_dir: Path, fal_key: str) -> bool:
-    """Paint ``jobs`` one after another in one background thread, stopping at
-    the daily cap. False when a batch in this style is already running. Each
+    """Paint ``jobs`` a few at a time (BATCH_PARALLEL) from one background
+    thread, stopping at the daily cap. False when a batch in this style is already running. Each
     painting goes through _start_painting, so the admin page and the widget
     see it as a painting under way like any other."""
     if not jobs:
@@ -1027,17 +1032,23 @@ def _start_batch(jobs: list[dict[str, Any]], data_dir: Path, fal_key: str) -> bo
     folder = _gen_dir(data_dir)
 
     def run() -> None:
+        mine: set[str] = set()
+
+        def in_flight() -> int:
+            with _PAINTING_LOCK:
+                return len(mine & _PAINTING)
+
         try:
             for job in jobs:
+                # a few at a time: wait for a slot before the next starts
+                while in_flight() >= BATCH_PARALLEL:
+                    time.sleep(0.5)
                 if _budget_used(folder) >= _CAP.get():
                     break
-                if not _start_painting(job, data_dir, fal_key):
-                    continue
-                while True:
-                    time.sleep(0.5)
-                    with _PAINTING_LOCK:
-                        if job["key"] not in _PAINTING:
-                            break
+                if _start_painting(job, data_dir, fal_key):
+                    mine.add(job["key"])
+            while in_flight():
+                time.sleep(0.5)
         finally:
             with _PAINTING_LOCK:
                 _BATCH.discard(tag)
@@ -1108,8 +1119,9 @@ def _generated(
     style: str = "gould",
 ) -> tuple[dict[str, Any] | None, bool, str | None]:
     """(picture, started_one, notice). Reads a kept painting, or starts one in
-    the background when allowed: one new painting per fetch at most, and
-    the daily limit, so a page fills in over a few refreshes. A species
+    the background when allowed: a few new paintings per fetch at most
+    (the caller counts), and the daily limit, so a page fills in over a
+    couple of refreshes. A species
     whose painting failed is left alone for GEN_RETRY_S and the failure is
     shown as a notice. The row's ``ref`` (an openly licensed photo of the
     observation itself) is the reference the species is painted from."""
